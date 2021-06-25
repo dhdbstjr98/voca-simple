@@ -8,3 +8,4 @@ https://voca-simple.bu.to (using [Netlify](https://www.netlify.com/))
 - svelte
 - daum tts api
 - daum eng-kor dictionary api
+- PretendardVariable font
