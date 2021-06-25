@@ -14,6 +14,10 @@
     margin-top: 2em;
   }
 
+  .collapsible {
+    font-size: 1.2em;
+  }
+
   .no-word {
     padding: 1rem;
     background-color: #fff;

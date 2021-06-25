@@ -47,7 +47,7 @@
 
   .collapsible-header .btn-play .material-icons {
     margin-right: 0;
-    font-size: 1.8em;
+    font-size: 1.6em;
   }
 </style>
 
