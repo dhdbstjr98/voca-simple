@@ -1,4 +1,5 @@
 <script>
+  import { tick } from "svelte";
   import { words } from "../store";
   import httpJsonp from "http-jsonp";
   import { v4 } from "uuid";
@@ -6,7 +7,25 @@
   let show_register = false;
   let word = "";
   let meaning = "";
+  let ref_word = null;
   let ref_meaning = null;
+
+  const toggleRegister = async () => {
+    show_register = !show_register;
+
+    await tick();
+
+    if (show_register) {
+      ref_word.focus();
+    } else {
+      word = "";
+      meaning = "";
+    }
+  };
+
+  const focusWord = () => {
+    ref_word.focus();
+  };
 
   const register = () => {
     if (!word) {
@@ -23,31 +42,34 @@
     show_register = false;
   };
 
-  const getMeaning = async () =>
-    new Promise((resolve, reject) => {
-      const callback = `callback${v4().substring(0, 8)}`;
-      httpJsonp({
-        url: `https://suggest.dic.daum.net/language/v1/search.json?cate=lan&q=${word}`,
-        params: {
-          callback: callback
-        },
-        callbackProp: "callback",
-        callback: data => {
-          if (
-            !data ||
-            !data.items ||
-            !data.items.lan ||
-            data.items.lan.length === 0
-          ) {
-            M.toast({ html: "단어를 찾을 수 없습니다." });
-          }
+  const getMeaning = () => {
+    if (!word) {
+      M.toast({ html: "단어를 입력해주세요." });
+      return;
+    }
 
-          [, word, meaning] = data.items.lan[0].item.split("|");
-
-          ref_meaning.dispatchEvent(new Event("focus"));
+    httpJsonp({
+      url: `https://suggest.dic.daum.net/language/v1/search.json?cate=lan&q=${word}`,
+      params: {
+        callback: `callback${v4().substring(0, 8)}`
+      },
+      callbackProp: "callback",
+      callback: data => {
+        if (
+          !data ||
+          !data.items ||
+          !data.items.lan ||
+          data.items.lan.length === 0
+        ) {
+          M.toast({ html: "단어를 찾을 수 없습니다." });
         }
-      });
+
+        [, word, meaning] = data.items.lan[0].item.split("|");
+
+        ref_meaning.focus();
+      }
     });
+  };
 </script>
 
 <style>
@@ -100,11 +122,7 @@
 </style>
 
 {#if !show_register}
-  <div
-    class="pre z-depth-2"
-    on:click={() => {
-      show_register = true;
-    }}>
+  <div class="pre z-depth-2" on:click={toggleRegister}>
     <div class="pre-inner">
       <i class="material-icons">add</i>
       <span>단어를 입력해주세요.</span>
@@ -114,7 +132,7 @@
   <div class="register z-depth-2">
     <div class="word-wrapper">
       <div class="input-field">
-        <input id="word" type="text" bind:value={word} />
+        <input id="word" type="text" bind:value={word} bind:this={ref_word} />
         <label for="word">단어</label>
       </div>
       <button
@@ -136,9 +154,7 @@
       <button
         type="button"
         class="btn waves-effect waves-light red accent-1"
-        on:click={() => {
-          show_register = false;
-        }}>
+        on:click={toggleRegister}>
         취소
       </button>
       <button
