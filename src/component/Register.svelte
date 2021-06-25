@@ -13,7 +13,7 @@
       M.toast({ html: "뜻을 입력해주세요." });
       return;
     }
-    words.set([...$words, { word, meaning }]);
+    words.set([{ word, meaning }, ...$words]);
     word = "";
     meaning = "";
     show_register = false;
