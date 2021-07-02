@@ -42,6 +42,12 @@
     show_register = false;
   };
 
+  const speakWord = () => {
+    new Audio(
+      `https://tts-translate.kakao.com/read?format=mpeg&lang=en&txt=${word}`
+    ).play();
+  };
+
   const getMeaning = () => {
     if (!word) {
       M.toast({ html: "단어를 입력해주세요." });
@@ -66,6 +72,7 @@
 
         [, word, meaning] = data.items.lan[0].item.split("|");
 
+        speakWord();
         ref_meaning.focus();
       }
     });
